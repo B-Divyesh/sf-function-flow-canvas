@@ -70,8 +70,9 @@ pub fn analyze(options: AnalyzeOptions) -> Result<FlowCanvas, String> {
     // Servers can acknowledge `didOpen` before their first semantic snapshot is
     // ready, and rust-analyzer can briefly answer "content modified" while it
     // builds that snapshot. Retry those recoverable first-use states for a
-    // bounded part of the caller's request budget rather than making users run
-    // the command a second time.
+    // caller's complete request budget rather than making users run the command
+    // a second time. A freshly installed rust-analyzer can need more than six
+    // seconds to finish its first workspace snapshot.
     let prepared = prepare_call_hierarchy(&mut client, &uri, position, options.timeout)?;
     let root_item = prepared
         .as_array()
@@ -185,7 +186,7 @@ fn prepare_call_hierarchy(
     timeout: Duration,
 ) -> Result<Value, String> {
     let started = Instant::now();
-    let retry_window = timeout.min(Duration::from_secs(6));
+    let retry_window = timeout;
     let mut last_response = Value::Null;
 
     loop {

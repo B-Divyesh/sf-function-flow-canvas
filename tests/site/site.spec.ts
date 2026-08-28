@@ -55,6 +55,18 @@ test('loads without console errors and walks the sample path', async ({ page }) 
   expect(errors).toEqual([]);
 });
 
+test('slash focuses demo search and Escape clears it', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('body').focus();
+  await page.keyboard.press('/');
+  await expect(page.locator('#demo-search')).toBeFocused();
+  await page.keyboard.type('event');
+  await expect(page.locator('#demo-status')).toContainText('1 symbols visible');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#demo-search')).toHaveValue('');
+  await expect(page.locator('#demo-status')).toContainText('4 symbols visible');
+});
+
 test('free depth prompts for Pathfinder and a valid license unlocks it', async ({ page }) => {
   await page.route('**/api/v1/products/function-flow-canvas/verify?license=*', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null }) }));
   await page.goto('/?license=test-token');

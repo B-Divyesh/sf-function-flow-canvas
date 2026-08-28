@@ -39,6 +39,19 @@ function updateDemo() {
   demoStatus.textContent = `${count} symbols visible · ${direction === 'both' ? 'both directions' : direction} · depth ${depthExpanded ? 3 : 2}`;
 }
 search.addEventListener('input', updateDemo);
+document.addEventListener('keydown', (event) => {
+  const target = event.target;
+  const isEditing = target instanceof HTMLInputElement
+    || target instanceof HTMLTextAreaElement
+    || (target instanceof HTMLElement && target.isContentEditable);
+  if (event.key === '/' && !isEditing && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault();
+    search.focus();
+  } else if (event.key === 'Escape' && document.activeElement === search) {
+    search.value = '';
+    updateDemo();
+  }
+});
 $$<HTMLButtonElement>('[data-direction]').forEach((button) => button.addEventListener('click', () => {
   direction = button.dataset.direction ?? 'both';
   $$<HTMLButtonElement>('[data-direction]').forEach((item) => { const active = item === button; item.classList.toggle('active', active); item.setAttribute('aria-pressed', String(active)); });
