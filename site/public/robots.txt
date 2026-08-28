@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://function-flow-canvas.sociobot.in/sitemap.xml
