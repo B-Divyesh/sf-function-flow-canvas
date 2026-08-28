@@ -10,7 +10,7 @@ homepage = "https://function-flow-canvas.sociobot.in"
 readme = "README.md"
 keywords = ["lsp", "call-graph", "code-navigation", "developer-tools"]
 categories = ["command-line-utilities", "development-tools"]
-include = ["src/**", "tests/**", "Cargo.toml", "README.md", "LICENSE", "CHANGELOG.md"]
+include = ["/src/**", "/tests/cli.rs", "/Cargo.toml", "/README.md", "/LICENSE", "/CHANGELOG.md"]
 
 [[bin]]
 name = "ffc"
