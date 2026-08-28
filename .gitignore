@@ -1,6 +1,7 @@
-node_modules/
-dist/
-.env
-*.log
-graphify-out/
-.DS_Store
+/target/
+/node_modules/
+/dist/
+/playwright-report/
+/test-results/
+/graphify-out/
+*.flow.html

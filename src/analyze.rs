@@ -164,6 +164,7 @@ pub fn analyze(options: AnalyzeOptions) -> Result<FlowCanvas, String> {
         }
     }
 
+    let _ = client.request("shutdown", Value::Null);
     let mut nodes: Vec<_> = nodes.into_values().collect();
     nodes.sort_by_key(|node| {
         (
@@ -292,14 +293,13 @@ fn hover_text(value: &Value) -> Option<String> {
         text.to_string()
     } else if let Some(value) = contents.get("value").and_then(Value::as_str) {
         value.to_string()
-    } else if let Some(parts) = contents.as_array() {
-        parts
+    } else {
+        contents
+            .as_array()?
             .iter()
             .filter_map(|part| part.as_str().or_else(|| part.get("value")?.as_str()))
             .collect::<Vec<_>>()
             .join("\n")
-    } else {
-        return None;
     };
     Some(text.replace("```", "").chars().take(420).collect())
 }

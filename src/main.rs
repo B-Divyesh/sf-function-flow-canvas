@@ -1,4 +1,5 @@
 mod analyze;
+mod license;
 mod lsp;
 mod model;
 mod render;
@@ -63,6 +64,10 @@ struct Cli {
     #[arg(long, default_value_t = 20, value_parser = clap::value_parser!(u64).range(1..=120))]
     timeout: u64,
 
+    /// Pathfinder license token (prefer the FFC_LICENSE environment variable)
+    #[arg(long, env = "FFC_LICENSE", hide_env_values = true)]
+    license: Option<String>,
+
     /// Explicit output format (normally inferred from --json)
     #[arg(long, value_enum, hide = true, default_value_t = OutputFormat::Html)]
     format: OutputFormat,
@@ -85,13 +90,18 @@ fn run(cli: Cli) -> Result<(), (u8, String)> {
             format!("{} is not a readable source file", cli.file.display()),
         ));
     }
-    let (detected_server, detected_args) = detect_server(&cli.file).ok_or_else(|| {
-        (
-            2,
-            "cannot detect a language server for this extension; pass --server".to_string(),
-        )
-    })?;
-    let server = cli.server.unwrap_or_else(|| detected_server.into());
+    license::require_for_depth(cli.depth, cli.license).map_err(|message| (2, message))?;
+    let detected = detect_server(&cli.file);
+    let server = cli
+        .server
+        .or_else(|| detected.as_ref().map(|value| value.0.into()))
+        .ok_or_else(|| {
+            (
+                2,
+                "cannot detect a language server for this extension; pass --server".to_string(),
+            )
+        })?;
+    let detected_args = detected.map(|value| value.1).unwrap_or_default();
     let server_args = if cli.server_args.is_empty() {
         detected_args
     } else {
@@ -166,10 +176,10 @@ fn safe_filename(symbol: &str) -> String {
 }
 
 fn classify_error(message: String) -> (u8, String) {
-    let code = if message.contains("could not start") || message.contains("language server") {
-        3
-    } else if message.contains("no call hierarchy") {
+    let code = if message.contains("no call hierarchy") {
         4
+    } else if message.contains("could not start") || message.contains("language server") {
+        3
     } else {
         2
     };

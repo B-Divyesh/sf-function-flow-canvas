@@ -64,9 +64,9 @@ with `--server` and repeatable `--server-arg` flags.
 
 The CLI is useful without a license: it maps both call directions to depth 2,
 includes snippets and type-hover context, filters noise, and exports HTML/JSON.
-The one-time **$29 Pathfinder unlock** raises the depth limit to 8 and enables
-portable canvas annotations. Purchase and license verification use Sociobot’s
-hosted billing service; no payment details touch this project. The factory adds
+The one-time **$29 Pathfinder unlock** raises the depth limit to 8 for longer
+request paths. Purchase and license verification use Sociobot’s hosted billing
+service; no payment details touch this project. The factory adds
 registered release configuration later, so the CLI accepts a license through
 `FFC_LICENSE` or `--license` without hardcoded product identifiers.
 

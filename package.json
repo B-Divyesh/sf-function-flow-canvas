@@ -1,0 +1,20 @@
+{
+  "name": "function-flow-canvas-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config site/vite.config.ts",
+    "build:cli": "cargo build --release && mkdir -p dist/bin && cp target/release/ffc dist/bin/ffc",
+    "build:site": "vite build --config site/vite.config.ts",
+    "build": "npm run build:cli && npm run build:site",
+    "test": "cargo test && npm run build:site && playwright test",
+    "preview": "vite preview --config site/vite.config.ts"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.58.2",
+    "typescript": "5.9.3",
+    "vite": "7.3.6"
+  }
+}

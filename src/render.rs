@@ -76,7 +76,7 @@ fn render_card(node: &SourceNode) -> String {
       <div class="node-top"><span class="node-mark" aria-hidden="true"></span><span class="kind">{}</span><span class="location">{}:{}</span></div>
       <h3><code>{}</code></h3>
       <p class="detail">{}</p>
-      <details class="source"><summary>Inspect source and type</summary><pre><code>{}</code></pre>{}</details>
+      <details class="source"><summary>Inspect source and type</summary><pre tabindex="0" aria-label="Source snippet"><code>{}</code></pre>{}</details>
     </article>"#,
         escape_attr(&query),
         node.depth,
@@ -123,7 +123,7 @@ fn escape(value: &str) -> String {
 }
 
 fn escape_attr(value: &str) -> String {
-    escape(value).replace('\n', " ").replace('\r', " ")
+    escape(value).replace(['\n', '\r'], " ")
 }
 
 const TEMPLATE: &str = r##"<!doctype html>
