@@ -70,6 +70,21 @@ Local production-preview evidence:
 - Local Lighthouse mobile: Performance 98, Accessibility 100, Best Practices
   100, SEO 100; LCP 1.354 s, CLS 0.0128, TBT 157 ms.
 
+## Live deployment evidence
+
+Commit `c0a6402` was pushed to `main` and deployed as a static site at
+<https://function-flow-canvas.sociobot.in> on 2026-08-28 UTC.
+
+- Live `verify-url.sh`: HTTP 200, load 689 ms, zero console/page errors, valid
+  title/lang/one-h1/main/alt/button-label smoke checks.
+- Live Chromium at 390px: `clientWidth = 390`, `scrollWidth = 390`, every visible
+  link/button is at least 44 × 44 CSS pixels, and axe reported zero serious or
+  critical violations.
+- Live headers: hashed JS returns `public, max-age=31536000, immutable`; `sw.js`
+  returns `no-cache`; CSP, Permissions-Policy, COOP, CORP, X-Frame-Options,
+  2-year preload HSTS, nosniff, and referrer policy are present. `/missing-route`
+  now returns HTTP 404 rather than the homepage with 200.
+
 ## External blocker: FFC-001
 
 The repository correctly uses the mandated Sociobot checkout URL, but production
@@ -82,13 +97,7 @@ or equivalent registration command/admin credential was present in the work
 environment, so the checkout cannot truthfully be marked verified until the
 factory enables the $29 product and supplies its return URL.
 
-## Deploy and next check
-
-Deployment class remains **static**. Deploy with:
-
-```sh
-/opt/fleet/lib/deploy-static.sh function-flow-canvas dist/site
-```
+## Next check
 
 After the factory product is registered, re-run the live checkout redirect,
 invalid-license response, immutable asset headers, no-cache `sw.js`, CSP/header
