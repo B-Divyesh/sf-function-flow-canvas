@@ -25,9 +25,9 @@ window. The root cause was that the retry window silently truncated the user's
 eight to nine seconds in this repository.
 
 `prepare_call_hierarchy` now retries empty and recognized transient responses
-for the complete configured timeout. The integration fixture stays empty for
-0.5 seconds and returns `-32801 content modified` until 6.5 seconds; it succeeds
-under `--timeout 10`, while the former six-second cap fails deterministically.
+for the complete configured timeout. The integration fixture delays its first
+`-32801 content modified` response until 6.25 seconds and then succeeds; under
+`--timeout 10`, the former six-second cap fails deterministically.
 
 Five isolated runs of the packed, clean-consumer-installed CLI now all pass:
 

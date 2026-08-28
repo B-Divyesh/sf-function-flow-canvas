@@ -58,7 +58,7 @@ while True:
 
 const COLD_SERVER: &str = r#"#!/usr/bin/env python3
 import json, sys, time
-started=time.monotonic()
+prepare_count=0
 def send(value):
     body=json.dumps(value,separators=(',',':')).encode()
     sys.stdout.buffer.write(('Content-Length: %d\r\n\r\n'%len(body)).encode()+body);sys.stdout.buffer.flush()
@@ -74,9 +74,10 @@ while True:
     method=msg.get('method'); ident=msg['id']
     if method=='initialize': result={'capabilities':{'callHierarchyProvider':True,'hoverProvider':True}}
     elif method=='textDocument/prepareCallHierarchy':
-        elapsed=time.monotonic()-started
-        if elapsed < 0.5: result=[]
-        elif elapsed < 6.5: send({'jsonrpc':'2.0','id':ident,'error':{'code':-32801,'message':'content modified'}}); continue
+        prepare_count+=1
+        if prepare_count==1:
+            time.sleep(6.25)
+            send({'jsonrpc':'2.0','id':ident,'error':{'code':-32801,'message':'content modified'}}); continue
         else:
             uri=msg['params']['textDocument']['uri']; result=[{'name':'root','kind':12,'uri':uri,'range':{'start':{'line':0,'character':3},'end':{'line':0,'character':7}},'selectionRange':{'start':{'line':0,'character':3},'end':{'line':0,'character':7}}}]
     elif method=='textDocument/hover': result={'contents':{'kind':'plaintext','value':'fn()'}}
