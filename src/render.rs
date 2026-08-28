@@ -143,7 +143,7 @@ const TEMPLATE: &str = r##"<!doctype html>
 <main id="canvas"><section class="toolbar" aria-label="Canvas controls"><label class="search">Find in this path<input id="path-search" type="search" placeholder="Symbol or file" autocomplete="off"></label><label>Direction<select id="direction"><option value="both">Both directions</option><option value="inbound">Inbound only</option><option value="outbound">Outbound only</option></select></label><span class="local">Local artifact</span></section><p id="filter-status" class="sr-status" aria-live="polite"></p><div class="canvas">{{INBOUND}}<section class="lane root-zone" data-side="root" aria-labelledby="root-title"><div class="lane-heading"><p>Selected origin</p><h2 id="root-title">Root symbol</h2></div>{{ROOT_CARD}}</section>{{OUTBOUND}}</div>{{WARNINGS}}</main>
 <footer><p>Generated locally by Function Flow Canvas. No source was uploaded. Calls reflect the installed language server and may omit dynamic dispatch or runtime wiring.</p></footer>
 <script id="flow-data" type="application/json">{{DATA}}</script>
-<script>(()=>{const q=document.querySelector('#path-search'),d=document.querySelector('#direction'),canvas=document.querySelector('.canvas'),status=document.querySelector('#filter-status');function update(){const term=q.value.trim().toLowerCase(),direction=d.value;let visible=0;document.querySelectorAll('.lane').forEach(lane=>{const side=lane.dataset.side,hidden=side!=='root'&&direction!=='both'&&side!==direction;lane.classList.toggle('hidden',hidden)});document.querySelectorAll('.node-card').forEach(card=>{const hit=!term||card.dataset.query.includes(term),laneHidden=card.closest('.lane').classList.contains('hidden');card.classList.toggle('filtered',!hit);if(hit&&!laneHidden)visible++});canvas.classList.toggle('single',direction!=='both');status.textContent=`${visible} symbols visible`};q.addEventListener('input',update);d.addEventListener('change',update);document.addEventListener('keydown',event=>{if(event.key==='/'&&!/input|select|textarea/i.test(document.activeElement.tagName)){event.preventDefault();q.focus()}if(event.key==='Escape'&&document.activeElement===q){q.value='';update();q.blur()}if((event.key==='ArrowDown'||event.key==='ArrowUp')&&document.activeElement.classList.contains('node-card')){event.preventDefault();const cards=[...document.querySelectorAll('.node-card:not(.filtered)')].filter(card=>!card.closest('.lane').classList.contains('hidden'));const at=cards.indexOf(document.activeElement),next=event.key==='ArrowDown'?at+1:at-1;(cards[next]||cards[event.key==='ArrowDown'?0:cards.length-1])?.focus()}});update()})();</script>
+<script>(()=>{const q=document.querySelector('#path-search'),d=document.querySelector('#direction'),canvas=document.querySelector('.canvas'),status=document.querySelector('#filter-status');function update(){const term=q.value.trim().toLowerCase(),direction=d.value;let visible=0;document.querySelectorAll('.lane').forEach(lane=>{const side=lane.dataset.side,hidden=side!=='root'&&direction!=='both'&&side!==direction;lane.classList.toggle('hidden',hidden)});document.querySelectorAll('.node-card').forEach(card=>{const hit=!term||card.dataset.query.includes(term),laneHidden=card.closest('.lane').classList.contains('hidden');card.classList.toggle('filtered',!hit);if(hit&&!laneHidden)visible++});canvas.classList.toggle('single',direction!=='both');status.textContent=`${visible} symbols visible`};q.addEventListener('input',update);d.addEventListener('change',update);document.addEventListener('keydown',event=>{const active=document.activeElement;if(event.key==='/'&&!/input|select|textarea/i.test(active.tagName)){event.preventDefault();q.focus()}if(event.key==='Escape'&&active===q){q.value='';update();q.blur()}if((event.key==='Enter'||event.key===' ')&&active.classList.contains('node-card')){event.preventDefault();const source=active.querySelector('.source');source.open=!source.open}if((event.key==='ArrowDown'||event.key==='ArrowUp')&&active.classList.contains('node-card')){event.preventDefault();const cards=[...document.querySelectorAll('.node-card:not(.filtered)')].filter(card=>!card.closest('.lane').classList.contains('hidden'));const at=cards.indexOf(active),next=event.key==='ArrowDown'?at+1:at-1;(cards[next]||cards[event.key==='ArrowDown'?0:cards.length-1])?.focus()}});update()})();</script>
 </body></html>"##;
 
 #[cfg(test)]
@@ -184,5 +184,29 @@ mod tests {
         assert!(html.contains("<main id=\"canvas\">"));
         assert!(html.contains("handle&lt;&amp;&gt;"));
         assert!(!html.contains("https://"));
+    }
+
+    #[test]
+    fn mutual_peer_renders_in_each_lane_and_node_cards_expand_by_keyboard() {
+        let mut flow = fixture();
+        for side in [Side::Inbound, Side::Outbound] {
+            flow.nodes.push(SourceNode {
+                id: "peer".into(),
+                name: "peer".into(),
+                detail: "fn peer()".into(),
+                kind: 12,
+                file: "src/peer.rs".into(),
+                line: 2,
+                column: 1,
+                snippet: "fn peer() {}".into(),
+                type_context: String::new(),
+                side,
+                depth: 1,
+            });
+        }
+        let html = render_html(&flow);
+        assert_eq!(html.matches("<code>peer</code>").count(), 2);
+        assert!(!html.contains("No outbound calls reported."));
+        assert!(html.contains("event.key==='Enter'||event.key===' '"));
     }
 }

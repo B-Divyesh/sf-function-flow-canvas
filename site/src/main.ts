@@ -26,7 +26,7 @@ let direction = 'both';
 let unlocked = false;
 let depthExpanded = false;
 const search = $<HTMLInputElement>('#demo-search')!;
-const status = $('#demo-status')!;
+const demoStatus = $('#demo-status')!;
 function updateDemo() {
   const query = search.value.trim().toLowerCase();
   let count = 0;
@@ -36,7 +36,7 @@ function updateDemo() {
     node.classList.toggle('dimmed', !matched);
     if (matched && !node.hidden && !node.closest<HTMLElement>('.graph-lane')?.hidden) count += 1;
   });
-  status.textContent = `${count} symbols visible · ${direction === 'both' ? 'both directions' : direction} · depth ${depthExpanded ? 3 : 2}`;
+  demoStatus.textContent = `${count} symbols visible · ${direction === 'both' ? 'both directions' : direction} · depth ${depthExpanded ? 3 : 2}`;
 }
 search.addEventListener('input', updateDemo);
 $$<HTMLButtonElement>('[data-direction]').forEach((button) => button.addEventListener('click', () => {
@@ -46,7 +46,7 @@ $$<HTMLButtonElement>('[data-direction]').forEach((button) => button.addEventLis
 }));
 
 $('#expand-depth')?.addEventListener('click', () => {
-  if (!unlocked) { $('#pathfinder')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); $('#license-token')?.focus({ preventScroll: true }); return; }
+  if (!unlocked) { $('#pathfinder')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); $<HTMLInputElement>('#license-token')?.focus({ preventScroll: true }); return; }
   depthExpanded = !depthExpanded;
   $('.depth-3')?.toggleAttribute('hidden', !depthExpanded);
   $('#expand-depth')!.innerHTML = depthExpanded ? 'Hide depth 3 <span class="lock">◇</span>' : 'Show depth 3 <span class="lock">◇</span>';

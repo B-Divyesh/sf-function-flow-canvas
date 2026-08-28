@@ -29,7 +29,8 @@ ffc src/api.rs --symbol handle_request --depth 2 --out request-path.html
 
 Open the HTML file in any browser. Use the toolbar to show inbound, outbound, or
 both directions; filter by symbol or file; and collapse branches. Press `/` to
-focus search and arrow keys to move between sibling nodes.
+focus search, arrow keys to move between sibling nodes, and Enter or Space on a
+focused node card to open or close its source context.
 
 Choose a server explicitly when auto-detection is not enough:
 
@@ -69,6 +70,12 @@ request paths. Purchase and license verification use Sociobot’s hosted billing
 service; no payment details touch this project. The factory adds
 registered release configuration later, so the CLI accepts a license through
 `FFC_LICENSE` or `--license` without hardcoded product identifiers.
+
+When a CLI license is verified, its token and daily verdict are kept in the
+user-only configuration cache (`$XDG_CONFIG_HOME/function-flow-canvas/` or
+`~/.config/function-flow-canvas/`); the cache file is created with `0600`
+permissions on Unix. The browser stores a returned license only in its local
+storage and removes it from the URL immediately.
 
 ## Develop and verify
 

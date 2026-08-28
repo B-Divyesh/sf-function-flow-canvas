@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 pub struct AnalyzeOptions {
     pub file: PathBuf,
@@ -67,25 +67,12 @@ pub fn analyze(options: AnalyzeOptions) -> Result<FlowCanvas, String> {
         }}),
     )?;
 
-    // Some servers acknowledge `didOpen` before their first semantic snapshot is
-    // ready. A short bounded retry avoids turning normal cold-start indexing into
-    // a false "symbol unavailable" result.
-    let mut prepared = Value::Null;
-    for attempt in 0..8 {
-        prepared = client.request(
-            "textDocument/prepareCallHierarchy",
-            json!({
-                "textDocument": {"uri": uri},
-                "position": {"line": position.0, "character": position.1}
-            }),
-        )?;
-        if prepared.as_array().is_some_and(|items| !items.is_empty()) {
-            break;
-        }
-        if attempt < 7 {
-            thread::sleep(Duration::from_millis(250));
-        }
-    }
+    // Servers can acknowledge `didOpen` before their first semantic snapshot is
+    // ready, and rust-analyzer can briefly answer "content modified" while it
+    // builds that snapshot. Retry those recoverable first-use states for a
+    // bounded part of the caller's request budget rather than making users run
+    // the command a second time.
+    let prepared = prepare_call_hierarchy(&mut client, &uri, position, options.timeout)?;
     let root_item = prepared
         .as_array()
         .and_then(|items| items.first())
@@ -97,10 +84,13 @@ pub fn analyze(options: AnalyzeOptions) -> Result<FlowCanvas, String> {
             )
         })?;
 
-    let mut nodes = HashMap::<String, SourceNode>::new();
+    // A symbol can legitimately be both a caller and a callee of the root. Keep
+    // a presentation node for each lane while edges retain the canonical symbol
+    // id, so a mutual call cannot make one side appear empty.
+    let mut nodes = HashMap::<(String, Side), SourceNode>::new();
     let root_id = item_id(&root_item);
     let root_node = item_to_node(&mut client, &root_item, Side::Root, 0, &root)?;
-    nodes.insert(root_id.clone(), root_node);
+    nodes.insert((root_id.clone(), Side::Root), root_node);
     let mut edges = Vec::new();
     let mut edge_keys = HashSet::new();
     let mut warnings = Vec::new();
@@ -136,10 +126,12 @@ pub fn analyze(options: AnalyzeOptions) -> Result<FlowCanvas, String> {
                     continue;
                 }
                 let next_id = item_id(&next_item);
-                if !nodes.contains_key(&next_id) {
+                if let std::collections::hash_map::Entry::Vacant(entry) =
+                    nodes.entry((next_id.clone(), side))
+                {
                     match item_to_node(&mut client, &next_item, side, current_depth + 1, &root) {
                         Ok(node) => {
-                            nodes.insert(next_id.clone(), node);
+                            entry.insert(node);
                         }
                         Err(error) => {
                             warnings.push(error);
@@ -184,6 +176,58 @@ pub fn analyze(options: AnalyzeOptions) -> Result<FlowCanvas, String> {
         edges,
         warnings,
     })
+}
+
+fn prepare_call_hierarchy(
+    client: &mut LspClient,
+    uri: &str,
+    position: (u64, u64),
+    timeout: Duration,
+) -> Result<Value, String> {
+    let started = Instant::now();
+    let retry_window = timeout.min(Duration::from_secs(6));
+    let mut last_response = Value::Null;
+
+    loop {
+        let transient_error = match client.request(
+            "textDocument/prepareCallHierarchy",
+            json!({
+                "textDocument": {"uri": uri},
+                "position": {"line": position.0, "character": position.1}
+            }),
+        ) {
+            Ok(response) if response.as_array().is_some_and(|items| !items.is_empty()) => {
+                return Ok(response);
+            }
+            Ok(response) => {
+                last_response = response;
+                None
+            }
+            Err(error) if is_transient_prepare_error(&error) => Some(error),
+            Err(error) => return Err(error),
+        };
+
+        if started.elapsed() >= retry_window {
+            return transient_error.map_or(Ok(last_response), Err);
+        }
+        thread::sleep(Duration::from_millis(250));
+    }
+}
+
+fn is_transient_prepare_error(error: &str) -> bool {
+    let error = error.to_ascii_lowercase();
+    [
+        "content modified",
+        "contentmodified",
+        "request cancelled",
+        "requestcanceled",
+        "server cancelled",
+        "servercanceled",
+        "indexing",
+        "not ready",
+    ]
+    .iter()
+    .any(|needle| error.contains(needle))
 }
 
 fn item_to_node(
@@ -451,5 +495,15 @@ mod tests {
     fn uri_round_trip_handles_spaces() {
         let path = Path::new("/tmp/flow canvas/api.rs");
         assert_eq!(uri_to_path(&path_to_uri(path)).unwrap(), path);
+    }
+
+    #[test]
+    fn recognises_transient_prepare_errors() {
+        assert!(is_transient_prepare_error(
+            "language server rejected `textDocument/prepareCallHierarchy`: content modified"
+        ));
+        assert!(!is_transient_prepare_error(
+            "language server rejected request: invalid params"
+        ));
     }
 }
