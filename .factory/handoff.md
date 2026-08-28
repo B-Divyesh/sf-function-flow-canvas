@@ -65,8 +65,7 @@ registry credentials or publish it.
 - Production budgets: entry JS 5.75 KB, CSS 14.26 KB, fonts 39.7 KB total, desktop
   hero 35 KB, mobile hero 10.3 KB. All are comfortably below the contract limits.
 - `cargo clippy --all-targets -- -D warnings`: pass.
-- `cargo package --allow-dirty`: pass (79 KB crate during build); rerun plain
-  `cargo package` from the final clean commit.
+- `cargo package`: pass; 14-file, 80.4 KiB ready-to-publish crate.
 - `npm audit --audit-level=high`: 0 vulnerabilities.
 
 ## Known boundaries / next steps
