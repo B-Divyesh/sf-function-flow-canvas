@@ -1,0 +1,14 @@
+{
+  "slug": "function-flow-canvas",
+  "title": "Function Flow Canvas",
+  "artifact_class": "cli",
+  "job": "Help engineers onboarding to an unfamiliar service follow one request path across functions, files, and types without opening an unbounded set of editor tabs.",
+  "smallest_useful_product": "A local CLI using an installed language server to emit one self-contained HTML canvas for a selected symbol: inbound/outbound calls, type hops, source snippets, and collapsible depth.",
+  "constraints": [
+    "Parse locally",
+    "Use only language servers already installed",
+    "Exclude generated and vendor paths by default",
+    "Never send source code to a service"
+  ],
+  "monetization": "one-time"
+}
