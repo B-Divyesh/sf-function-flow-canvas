@@ -33,6 +33,11 @@
 .legal-main a {
   color: var(--relay);
 }
+.legal-main article a[href^="https://"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 .legal-main code {
   font-family: var(--mono);
   color: var(--signal);

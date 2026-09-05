@@ -10,7 +10,7 @@
     "build": "npm run build:cli && npm run build:site",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "npm run typecheck && cargo fmt --all -- --check && cargo clippy --all-targets --all-features -- -D warnings",
-    "test": "cargo test && npm run typecheck && npm run build:site && playwright test",
+    "test": "cargo test && cargo build --bin ffc && npm run typecheck && npm run build:site && playwright test",
     "preview": "vite preview --config site/vite.config.ts"
   },
   "devDependencies": {

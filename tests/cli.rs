@@ -192,3 +192,32 @@ fn cold_prepare_responses_recover_without_a_second_invocation() {
     let flow: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     assert_eq!(flow["nodes"].as_array().unwrap().len(), 1);
 }
+
+#[test]
+fn cli_demo_writes_a_bundled_canvas_to_a_temporary_folder() {
+    let output = Command::new(env!("CARGO_BIN_EXE_ffc"))
+        .arg("--demo")
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let canvas = stdout
+        .lines()
+        .find_map(|line| line.strip_prefix("Sample canvas: "))
+        .unwrap();
+    let page = fs::read_to_string(canvas).unwrap();
+    assert!(canvas.contains("function-flow-canvas-demo-"));
+    assert!(page.contains("receive_webhook"));
+    assert!(page.contains("persist_order"));
+    assert!(!page.contains("https://"));
+}
+
+#[test]
+fn depth_above_the_free_two_hop_limit_is_invalid_input() {
+    let output = Command::new(env!("CARGO_BIN_EXE_ffc"))
+        .args(["missing.rs", "--symbol", "root", "--depth", "3"])
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(2));
+    assert!(String::from_utf8_lossy(&output.stderr).contains("1..=2"));
+}

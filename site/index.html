@@ -4,9 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#070b0f" />
-    <meta name="description" content="Map one function's callers, callees, types, and source into a private, self-contained HTML canvas." />
-    <title>Function Flow Canvas — Trace one request. Close twelve tabs.</title>
+    <meta name="description" content="Map one function’s callers, callees, types, and source into a local HTML canvas." />
+    <title>Function Flow Canvas — Map a request path</title>
+    <link id="canonical" rel="canonical" href="https://function-flow-canvas.sociobot.in/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Function Flow Canvas — Map a request path" />
+    <meta property="og:description" content="Map one function’s callers, callees, types, and source into a local HTML canvas." />
+    <meta property="og:image" content="https://function-flow-canvas.sociobot.in/social-card.webp" />
+    <meta property="og:url" content="https://function-flow-canvas.sociobot.in/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Function Flow Canvas — Map a request path" />
+    <meta name="twitter:description" content="Map one function’s callers, callees, types, and source into a local HTML canvas." />
+    <meta name="twitter:image" content="https://function-flow-canvas.sociobot.in/social-card.webp" />
     <link rel="icon" href="/route-mark.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/src/style.css" />
@@ -19,8 +30,8 @@
         <span>Function Flow Canvas</span>
       </a>
       <nav aria-label="Main navigation">
-        <a href="#demo">Demo</a><a href="#install">Install</a><a href="#pathfinder">Pathfinder</a>
-        <a class="nav-cta" href="#install">Get the CLI</a>
+        <a href="/demo">Demo</a><a href="#install">Install</a><a href="/privacy/">Privacy</a>
+        <a class="nav-cta" href="/demo">Try the sample</a>
       </nav>
     </header>
 
@@ -30,70 +41,57 @@
           <picture><source media="(max-width: 720px)" srcset="/relay-station-720.webp" /><img src="/relay-station.webp" width="1440" height="613" alt="" fetchpriority="high" /></picture>
         </div>
         <div class="hero-copy">
-          <p class="kicker"><span></span> A local route through unfamiliar code</p>
-          <h1 id="hero-title">Trace one request.<br /><em>Close twelve tabs.</em></h1>
-          <p class="lede">Pick a function. Get a bounded map of its callers, callees, types, and nearby source—powered by the language server already on your machine.</p>
-          <div class="hero-actions"><a class="button primary" href="#install">Install v0.1.0</a><a class="text-link" href="#demo">Walk the sample path <span aria-hidden="true">↓</span></a></div>
-          <ul class="trust-line" aria-label="Product guarantees"><li>Local only</li><li>No account</li><li>One HTML file</li></ul>
+          <p class="kicker"><span></span> Local command-line tool</p>
+          <h1 id="hero-title">Map a request path in code</h1>
+          <p class="lede">For engineers learning an unfamiliar service, see one function’s callers, callees, types, and source together.</p>
+          <div class="hero-actions"><a class="button primary" href="/demo">Try it with sample data</a><span class="action-result">Opens a populated webhook canvas.</span></div>
+          <ul class="trust-line" aria-label="Product facts"><li>Runs locally</li><li>No account</li><li>Free two-hop maps</li></ul>
         </div>
-        <aside class="route-card" aria-label="Example command output">
-          <div class="terminal-bar"><span></span><span></span><span></span><b>service / request path</b></div>
-          <pre><code><span class="dim">$</span> ffc src/webhook.rs \
-  <span class="amber">--symbol receive_webhook</span>
-
-<span class="good">✓</span> rust-analyzer ready
-<span class="good">✓</span> 9 symbols · 8 calls · depth 2
-<span class="good">✓</span> wrote receive-webhook-flow.html</code></pre>
-          <div class="route-mini" aria-hidden="true"><span>route</span><i></i><strong>receive_webhook</strong><i></i><span>persist</span></div>
-        </aside>
-        <p class="hero-caption">The path is lit. The rest stays quiet.</p>
-      </section>
-
-      <section class="problem band" aria-labelledby="problem-title">
-        <p class="section-index">01 / Field note</p>
-        <div><h2 id="problem-title">Code navigation is good at the next jump. Onboarding needs the whole path.</h2></div>
-        <p>Back stacks forget why you opened a file. Call hierarchies disappear when the panel closes. Function Flow Canvas turns a question into an artifact you can search, collapse, and share.</p>
+        <figure class="route-card"><img src="/ffc-demo-terminal.svg" width="960" height="460" alt="Terminal recording: ffc --demo writes a five-symbol, four-call HTML canvas in a temporary folder." /><figcaption>Run the bundled sample. It writes a canvas path you can open.</figcaption></figure>
       </section>
 
       <section class="demo-section" id="demo" aria-labelledby="demo-title">
-        <div class="section-head"><div><p class="kicker"><span></span> Recorded-data demo</p><h2 id="demo-title">Walk a webhook from edge to write.</h2></div><p>This sample is rendered from the same graph shape the CLI exports. Select a node to inspect its source and type context.</p></div>
+        <div class="demo-banner" id="demo-banner" role="status" hidden>
+          <p><strong>Demo — sample data, nothing is saved.</strong> This sample stays separate from real site data.</p>
+          <div><button class="quiet-button" id="reset-demo" type="button">Reset demo</button><a class="button secondary" id="start-real" href="/#install">Start for real</a></div>
+        </div>
+        <div class="section-head"><div><p class="kicker"><span></span> Sample request path</p><h2 id="demo-title">Inspect a webhook from route to storage</h2></div><p>Select a function to see its source snippet and type context.</p></div>
         <div class="demo-shell">
-          <div class="demo-tools" aria-label="Demo controls">
-            <label>Filter the path<input id="demo-search" type="search" placeholder="Try “order” or “db.rs”" /></label>
+          <div class="demo-tools" aria-label="Sample canvas controls">
+            <label for="demo-search">Filter the path<input id="demo-search" type="search" placeholder="Try “order” or “db.rs”" autocomplete="off" /></label>
             <fieldset><legend>Direction</legend><button class="chip active" type="button" data-direction="both" aria-pressed="true">Both</button><button class="chip" type="button" data-direction="inbound" aria-pressed="false">Inbound</button><button class="chip" type="button" data-direction="outbound" aria-pressed="false">Outbound</button></fieldset>
-            <button class="quiet-button" id="expand-depth" type="button">Show depth 3 <span class="lock" aria-label="Pathfinder feature">◇</span></button>
           </div>
           <div class="demo-workspace">
             <div class="graph" aria-label="Webhook function call path">
-              <div class="graph-lane" data-lane="inbound"><p class="lane-label">Inbound · caller</p><button class="graph-node" data-node="route"><small>routes.rs:28</small><code>route_webhook</code><span>axum::Router</span></button></div>
-              <div class="graph-lane origin" data-lane="root"><p class="lane-label">Selected origin</p><button class="graph-node selected" data-node="receive" aria-current="true"><small>webhook.rs:41</small><code>receive_webhook</code><span>async fn → Result</span></button></div>
-              <div class="graph-lane" data-lane="outbound"><p class="lane-label">Outbound · callees</p><button class="graph-node" data-node="verify"><small>auth.rs:16</small><code>verify_signature</code><span>&amp;HeaderMap → bool</span></button><button class="graph-node depth-2" data-node="decode"><small>event.rs:63</small><code>decode_event</code><span>&amp;[u8] → Event</span></button><button class="graph-node depth-3" data-node="persist" hidden><small>db.rs:112</small><code>persist_order</code><span>&amp;Pool, Order → Id</span></button></div>
+              <div class="graph-lane" data-lane="inbound"><p class="lane-label">Inbound caller</p><button class="graph-node" data-node="route"><small>routes.rs:28</small><code>route_webhook</code><span>axum::Router</span></button></div>
+              <div class="graph-lane origin" data-lane="root"><p class="lane-label">Selected function</p><button class="graph-node selected" data-node="receive" aria-current="true"><small>webhook.rs:41</small><code>receive_webhook</code><span>async fn → Result</span></button></div>
+              <div class="graph-lane" data-lane="outbound"><p class="lane-label">Outbound callees</p><button class="graph-node" data-node="verify"><small>auth.rs:16</small><code>verify_signature</code><span>&amp;HeaderMap → bool</span></button><button class="graph-node depth-2" data-node="decode"><small>event.rs:63</small><code>decode_event</code><span>&amp;[u8] → Event</span></button><button class="graph-node depth-2" data-node="persist"><small>db.rs:112</small><code>persist_order</code><span>&amp;Pool, Order → Id</span></button></div>
             </div>
             <aside class="inspector" aria-live="polite">
               <div class="inspector-head"><span id="inspect-file">webhook.rs:41</span><b id="inspect-kind">function</b></div><h3><code id="inspect-name">receive_webhook</code></h3><pre tabindex="0" aria-label="Selected source snippet"><code id="inspect-code">39  pub async fn receive_webhook(
 40      State(app): State&lt;App&gt;,
 41      headers: HeaderMap,
 42      body: Bytes,
-43  ) -&gt; Result&lt;StatusCode, ApiError&gt; {</code></pre><p class="type-hop"><span>Type hop</span><code id="inspect-type">Bytes → DomainEvent → Order</code></p>
+43  ) -&gt; Result&lt;StatusCode, ApiError&gt; {</code></pre><p class="type-hop"><span>Type context</span><code id="inspect-type">Bytes → DomainEvent → Order</code></p>
             </aside>
           </div>
-          <p id="demo-status" class="demo-status" aria-live="polite">4 symbols visible · both directions · depth 2</p>
+          <p id="demo-status" class="demo-status" aria-live="polite">5 symbols visible · both directions · depth 2</p>
         </div>
       </section>
 
-      <section class="features band" aria-labelledby="features-title"><p class="section-index">02 / Survey kit</p><div><h2 id="features-title">Small by design. Complete where it counts.</h2><ul class="feature-list"><li><b>Calls in both directions</b><span>Follow the entry point backward or the work forward.</span></li><li><b>Context at every stop</b><span>Five source lines and the server’s type hover travel with the graph.</span></li><li><b>Noise has boundaries</b><span>Vendor, generated, build, and off-workspace paths stay out by default.</span></li></ul></div><p>The result is plain HTML with its styles, behavior, and graph data inside. Attach it to a ticket, save it beside an incident note, or open it offline.</p></section>
-
-      <section class="install-section" id="install" aria-labelledby="install-title"><div><p class="kicker"><span></span> Two commands to first light</p><h2 id="install-title">Use the server you already trust.</h2><p>Rust, Go, TypeScript, JavaScript, Python, and C/C++ are detected automatically. Any server with LSP call hierarchy works through <code>--server</code>.</p></div><div class="install-code"><div><span>1 · Install from source</span><button class="copy" data-copy="cargo install --git https://github.com/B-Divyesh/sf-function-flow-canvas" type="button">Copy</button></div><pre tabindex="0" aria-label="Install command"><code>cargo install --git https://github.com/B-Divyesh/sf-function-flow-canvas</code></pre><div><span>2 · Map one symbol</span><button class="copy" data-copy="ffc src/api.rs --symbol handle_request --depth 2" type="button">Copy</button></div><pre tabindex="0" aria-label="Map symbol command"><code>ffc src/api.rs --symbol handle_request --depth 2</code></pre></div></section>
-
-      <section class="pathfinder" id="pathfinder" aria-labelledby="pathfinder-title">
-        <div class="price-mark"><span>Pathfinder</span><strong>$29</strong><small>one time</small></div>
-        <div class="price-copy"><p class="kicker"><span></span> For deeper terrain</p><h2 id="pathfinder-title">Keep the free canvas. Unlock the long route.</h2><p>The free CLI maps both directions to depth 2, with snippets, types, search, and JSON export. Pathfinder raises the limit to depth 8 for long request paths that cross service layers.</p><ul><li>Up to eight call hops</li><li>The same private HTML and JSON outputs</li><li>One license, your own devices</li></ul><a class="button primary" href="https://api.sociobot.in/api/v1/products/function-flow-canvas/checkout">Buy Pathfinder — $29</a><p class="merchant">Secure checkout by Sociobot / Dodo, merchant of record. Refunds revoke the license.</p></div>
-        <form class="restore" id="restore-form"><label for="license-token">Already bought it? Restore your license</label><div><input id="license-token" name="license" autocomplete="off" spellcheck="false" placeholder="Paste license token" /><button class="button secondary" type="submit">Verify license</button></div><p id="license-status" role="status">Your free canvas is always available.</p></form>
+      <section class="how-it-works band" aria-labelledby="how-title">
+        <p class="section-index">How it works</p>
+        <div><h2 id="how-title">Generate a focused local canvas</h2><ol class="step-list"><li><b>Choose a function</b><span>Pass one file and symbol to the CLI.</span></li><li><b>Use your language server</b><span>The CLI asks the server already installed on your machine.</span></li><li><b>Open the HTML file</b><span>Search the path, inspect source, and share the file when appropriate.</span></li></ol></div>
+        <p>Use the bundled sample first. It writes a complete canvas in a temporary folder.</p>
       </section>
-      <div class="offline-notice" id="offline-notice" role="status" hidden>Offline. Docs and the demo still work; license verification will resume when you reconnect.</div>
+
+      <section class="boundaries band" aria-labelledby="boundaries-title"><p class="section-index">Privacy and limits</p><div><h2 id="boundaries-title">Keep code local and check uncertain calls</h2><ul class="feature-list"><li><b>Local analysis</b><span>The CLI starts the language server on your machine.</span></li><li><b>Bounded output</b><span>Free maps include callers and callees through two hops.</span></li><li><b>Read-only input</b><span>The CLI reads source files without changing them.</span></li></ul></div><p>Read the canvas beside the code before making an important decision.</p></section>
+
+      <section class="install-section" id="install" aria-labelledby="install-title"><div><p class="kicker"><span></span> Install and run</p><h2 id="install-title">Install the CLI and map a function</h2><p>Install Rust and the language server for the code you want to inspect before running the command.</p></div><div class="install-code"><div><span>1 · Install from the repository</span><button class="copy" data-copy="cargo install --git https://github.com/B-Divyesh/sf-function-flow-canvas" type="button">Copy</button></div><pre tabindex="0" aria-label="Install command"><code>cargo install --git https://github.com/B-Divyesh/sf-function-flow-canvas</code></pre><div><span>2 · Map one symbol</span><button class="copy" data-copy="ffc src/api.rs --symbol handle_request --depth 2" type="button">Copy</button></div><pre tabindex="0" aria-label="Map symbol command"><code>ffc src/api.rs --symbol handle_request --depth 2</code></pre></div></section>
+      <div class="offline-notice" id="offline-notice" role="status" hidden>You are offline.</div>
     </main>
 
-    <footer class="site-footer"><a class="brand" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16h8m10 0h8M11 16l5-8 5 8-5 8z"/><circle cx="3" cy="16" r="2"/><circle cx="29" cy="16" r="2"/></svg><span>Function Flow Canvas</span></a><p>Read the path, not the whole world.</p><nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-function-flow-canvas">Source</a></nav></footer>
+    <footer class="site-footer"><a class="brand" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16h8m10 0h8M11 16l5-8 5 8-5 8z"/><circle cx="3" cy="16" r="2"/><circle cx="29" cy="16" r="2"/></svg><span>Function Flow Canvas</span></a><p>Map one request path with your installed language server.<br />Built by Param Factory · v0.1.0</p><nav aria-label="Footer"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-function-flow-canvas">Source on GitHub</a></nav></footer>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -214,6 +214,11 @@ a {
   gap: 1.5rem;
   margin-top: 2rem;
 }
+.action-result {
+  max-width: 24ch;
+  color: var(--mist);
+  font: 500 0.78rem/1.5 var(--mono);
+}
 .button {
   min-height: 48px;
   display: inline-flex;
@@ -269,6 +274,17 @@ a {
   padding: 0;
   box-shadow: 0 2rem 7rem #000c;
   backdrop-filter: blur(12px);
+}
+.route-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.route-card figcaption {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid #303e44;
+  color: var(--mist);
+  font: 500 0.7rem var(--mono);
 }
 .terminal-bar {
   height: 46px;
@@ -364,6 +380,26 @@ a {
 .demo-section {
   padding: 8rem var(--gutter);
   position: relative;
+}
+.demo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: 1180px;
+  margin: 0 auto 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--warning);
+  background: #251e10;
+  color: var(--fog);
+}
+.demo-banner p {
+  margin: 0;
+}
+.demo-banner > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 .section-head {
   display: grid;
@@ -603,6 +639,31 @@ a {
   border-top: 1px solid #35434a;
 }
 .feature-list span {
+  color: var(--mist);
+}
+.step-list {
+  display: grid;
+  gap: 0;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+.step-list li {
+  display: grid;
+  grid-template-columns: 2.6rem 0.8fr 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 1.35rem 0;
+  border-top: 1px solid #35434a;
+}
+.step-list li::before {
+  counter-increment: steps;
+  content: "0" counter(steps);
+  color: var(--signal);
+  font: 600 0.72rem var(--mono);
+}
+.step-list span {
   color: var(--mist);
 }
 .features {
@@ -863,6 +924,21 @@ a {
   .trust-line {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .demo-banner,
+  .demo-banner > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .demo-banner .button,
+  .demo-banner .quiet-button {
+    width: 100%;
+  }
+  .step-list li {
+    grid-template-columns: 2rem 1fr;
+  }
+  .step-list li span {
+    grid-column: 2;
   }
   .route-card {
     margin-top: 3rem;

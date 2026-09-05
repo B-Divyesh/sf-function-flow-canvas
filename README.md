@@ -1,25 +1,36 @@
 # Function Flow Canvas
 
-Function Flow Canvas (`ffc`) turns one symbol and an installed language server
-into a small, self-contained HTML map of the request path around it. It is for
-engineers reading an unfamiliar service who need callers, callees, type context,
-and nearby source without opening another dozen tabs.
+Function Flow Canvas (`ffc`) helps engineers learning an unfamiliar service map one request path around a chosen function. It writes one local HTML canvas with callers, callees, source snippets, and type context.
 
-Everything runs locally. Source code is never uploaded, the generated canvas has
-no remote dependencies, and vendor/generated paths are excluded by default.
+Try the sample first: <https://function-flow-canvas.sociobot.in/demo>
 
 ## Install
 
-Prerequisites: Rust 1.85+ and the language server for the code you want to read.
+Install Rust 1.85+ and a language server for the code you want to inspect. The CLI uses that local language server.
 
 ```sh
 cargo install --path .
 ```
 
-The repository also produces a ready-to-publish crate with `cargo package`.
-Registry credentials and publication are handled by the Param Factory.
+For a repository checkout, the ready-to-publish package is made with:
 
-## Usage
+```sh
+cargo package --locked
+```
+
+Registry publishing is handled by Param Factory.
+
+## Run the bundled sample
+
+The sample needs no source repository or language server. It writes a sample source file and a self-contained canvas to a new temporary folder.
+
+```sh
+ffc --demo
+```
+
+Open the printed `webhook-request-flow.html` path in a browser. The sample has one inbound caller, three outbound calls, source snippets, and type context.
+
+## Map your code
 
 Generate a two-hop canvas around a Rust function:
 
@@ -27,12 +38,9 @@ Generate a two-hop canvas around a Rust function:
 ffc src/api.rs --symbol handle_request --depth 2 --out request-path.html
 ```
 
-Open the HTML file in any browser. Use the toolbar to show inbound, outbound, or
-both directions; filter by symbol or file; and collapse branches. Press `/` to
-focus search, arrow keys to move between sibling nodes, and Enter or Space on a
-focused node card to open or close its source context.
+Open the HTML file in a browser. Use the toolbar to show inbound, outbound, or both directions. Press `/` to focus search, Escape to clear it, arrow keys to move between visible nodes, and Enter or Space on a focused node card to open its source context.
 
-Choose a server explicitly when auto-detection is not enough:
+Pass a language server explicitly when needed:
 
 ```sh
 ffc app/service.ts --symbol createOrder \
@@ -43,61 +51,37 @@ ffc app/service.ts --symbol createOrder \
 Resolve a repeated symbol by its 1-based source position:
 
 ```sh
-ffc service.go --symbol ServeHTTP --position 84:9 --depth 3
+ffc service.go --symbol ServeHTTP --position 84:9 --depth 2
 ```
 
-Use JSON for scripts or debugging an LSP setup:
+Use JSON for scripts or language-server debugging:
 
 ```sh
 ffc src/api.rs --symbol handle_request --json > flow.json
 ```
 
-`ffc --help` documents all options. The command exits `0` on success, `2` for
-invalid input, `3` when the language server cannot start or respond, and `4`
-when the selected symbol has no call-hierarchy item.
+The free CLI maps inbound and outbound calls through two hops.
 
-Supported auto-detected servers are `rust-analyzer` (Rust), `gopls` (Go),
-`typescript-language-server --stdio` (JavaScript/TypeScript), `pylsp` (Python),
-and `clangd` (C/C++). Any LSP server implementing call hierarchy can be supplied
-with `--server` and repeatable `--server-arg` flags.
+## Privacy and limits
 
-## Free and Pathfinder editions
+The CLI reads the source file you choose and talks to the language server it starts on your machine. The generated canvas is one self-contained HTML file. The CLI reads source files without changing them.
 
-The CLI is useful without a license: it maps both call directions to depth 2,
-includes snippets and type-hover context, filters noise, and exports HTML/JSON.
-The one-time **$29 Pathfinder unlock** raises the depth limit to 8 for longer
-request paths. Purchase and license verification use Sociobot’s hosted billing
-service; no payment details touch this project. The factory adds
-registered release configuration later, so the CLI accepts a license through
-`FFC_LICENSE` or `--license` without hardcoded product identifiers.
+Function Flow Canvas is a code-reading tool for one selected path. Review its output beside the code before making an important decision.
 
-When a CLI license is verified, its token and daily verdict are kept in the
-user-only configuration cache (`$XDG_CONFIG_HOME/function-flow-canvas/` or
-`~/.config/function-flow-canvas/`); the cache file is created with `0600`
-permissions on Unix. The browser stores a returned license only in its local
-storage and removes it from the URL immediately.
+The website has no account sign-in, cookies, advertising, or behavioral tracking. Its sample stores only demo controls in a separate browser storage namespace; Reset demo and Start for real remove that sample state. Read the [Privacy policy](https://function-flow-canvas.sociobot.in/privacy/) and [Terms](https://function-flow-canvas.sociobot.in/terms/).
 
-## Develop and verify
+## Develop, test, and deploy
 
 ```sh
-npm install
+npm ci
 npm test
+npm run lint
 npm run build
 ```
 
-`npm run build` creates the Rust release binary and the static documentation at
-`dist/site/index.html`. Run `npm run dev` for the site and `cargo test` for only
-the CLI. The site contains an interactive recorded-data demo with no code upload.
+`npm run build` creates `dist/bin/ffc` and `dist/site/`. Preview the site with `npm run preview`. The production static deployment uses `dist/site/`; deployment is performed by the factory worker.
 
-## Privacy and boundaries
-
-Analysis is local and deterministic. The CLI talks only to a child language
-server over stdio. License verification is the sole optional network request;
-its daily verdict is stored locally. See the site’s Privacy and Terms pages.
-
-This is a reading artifact, not an editor, repository-wide index, or AI search
-tool. Cross-language runtime dispatch and calls omitted by a language server are
-outside v1’s model and are reported honestly in the canvas.
+Run every public claim check from a clean checkout with the commands in [`.factory/claims.json`](.factory/claims.json). The demo storage boundary and CLI sample are documented in [`.factory/demo.md`](.factory/demo.md).
 
 ## License
 

@@ -1,5 +1,5 @@
 mod analyze;
-mod license;
+mod demo;
 mod lsp;
 mod model;
 mod render;
@@ -22,18 +22,24 @@ enum OutputFormat {
 #[command(name = "ffc", version, about, long_about = None, max_term_width = 100)]
 struct Cli {
     /// Source file containing the selected symbol
-    file: PathBuf,
+    #[arg(required_unless_present = "demo")]
+    file: Option<PathBuf>,
 
     /// Function or method name to use as the canvas origin
     #[arg(short, long)]
-    symbol: String,
+    #[arg(required_unless_present = "demo")]
+    symbol: Option<String>,
+
+    /// Generate a self-contained canvas from the bundled webhook sample
+    #[arg(long, conflicts_with_all = ["file", "symbol", "position", "server", "server_args", "root", "include_external", "timeout", "format", "json", "out", "depth"])]
+    demo: bool,
 
     /// 1-based LINE:COLUMN when the symbol appears more than once
     #[arg(long, value_parser = parse_position)]
     position: Option<(u64, u64)>,
 
-    /// Number of inbound and outbound call hops (1–8)
-    #[arg(short, long, default_value_t = 2, value_parser = clap::value_parser!(u8).range(1..=8))]
+    /// Number of inbound and outbound call hops (1–2)
+    #[arg(short, long, default_value_t = 2, value_parser = clap::value_parser!(u8).range(1..=2))]
     depth: u8,
 
     /// Output path; defaults to <symbol>-flow.html
@@ -64,10 +70,6 @@ struct Cli {
     #[arg(long, default_value_t = 20, value_parser = clap::value_parser!(u64).range(1..=120))]
     timeout: u64,
 
-    /// Pathfinder license token (prefer the FFC_LICENSE environment variable)
-    #[arg(long, env = "FFC_LICENSE", hide_env_values = true)]
-    license: Option<String>,
-
     /// Explicit output format (normally inferred from --json)
     #[arg(long, value_enum, hide = true, default_value_t = OutputFormat::Html)]
     format: OutputFormat,
@@ -84,14 +86,22 @@ fn main() -> ExitCode {
 }
 
 fn run(cli: Cli) -> Result<(), (u8, String)> {
-    if !cli.file.is_file() {
+    if cli.demo {
+        return demo::write_demo().map_err(|error| (2, error));
+    }
+    let file = cli
+        .file
+        .expect("clap requires a file unless --demo is used");
+    let symbol = cli
+        .symbol
+        .expect("clap requires a symbol unless --demo is used");
+    if !file.is_file() {
         return Err((
             2,
-            format!("{} is not a readable source file", cli.file.display()),
+            format!("{} is not a readable source file", file.display()),
         ));
     }
-    license::require_for_depth(cli.depth, cli.license).map_err(|message| (2, message))?;
-    let detected = detect_server(&cli.file);
+    let detected = detect_server(&file);
     let server = cli
         .server
         .or_else(|| detected.as_ref().map(|value| value.0.into()))
@@ -108,8 +118,8 @@ fn run(cli: Cli) -> Result<(), (u8, String)> {
         cli.server_args
     };
     let flow = analyze(AnalyzeOptions {
-        file: cli.file,
-        symbol: cli.symbol.clone(),
+        file,
+        symbol: symbol.clone(),
         position: cli.position,
         depth: cli.depth,
         server,
@@ -129,7 +139,7 @@ fn run(cli: Cli) -> Result<(), (u8, String)> {
     }
     let path = cli
         .out
-        .unwrap_or_else(|| PathBuf::from(format!("{}-flow.html", safe_filename(&cli.symbol))));
+        .unwrap_or_else(|| PathBuf::from(format!("{}-flow.html", safe_filename(&symbol))));
     fs::write(&path, render::render_html(&flow))
         .map_err(|error| (2, format!("could not write {}: {error}", path.display())))?;
     eprintln!(

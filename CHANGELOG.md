@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0 — 2026-09-05
+
+- Added the isolated website and CLI sample journeys.
+- Added metadata, legal-page touch targets, claims inventory, and claim checks.
+- Kept the release free while the external Pathfinder billing registration is unavailable.
+
 All notable changes follow Keep a Changelog and this project uses semantic
 versioning.
 

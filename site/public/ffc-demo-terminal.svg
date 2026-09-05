@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="title description">
+  <title id="title">Function Flow Canvas bundled sample terminal recording</title>
+  <desc id="description">The ffc --demo command writes sample source and a five-symbol, four-call HTML canvas into a temporary folder.</desc>
+  <rect width="960" height="460" fill="#090e12"/>
+  <rect width="960" height="70" fill="#0e151a"/>
+  <circle cx="42" cy="35" r="8" fill="#526067"/><circle cx="68" cy="35" r="8" fill="#867d5e"/><circle cx="94" cy="35" r="8" fill="#526067"/>
+  <text x="900" y="41" text-anchor="end" fill="#a8b5b3" font-family="monospace" font-size="20">bundled sample</text>
+  <g font-family="monospace" font-size="26">
+    <text x="48" y="132" fill="#70807d">$</text><text x="74" y="132" fill="#eef3ed">ffc --demo</text>
+    <text x="48" y="205" fill="#a8b5b3">Sample source: /tmp/function-flow-canvas-demo-…</text>
+    <text x="48" y="260" fill="#a8b5b3">Sample canvas: /tmp/…/webhook-request-flow.html</text>
+    <text x="48" y="335" fill="#8fce89">Canvas: 5 symbols · 4 calls · depth 2</text>
+  </g>
+  <path d="M48 393h180m42 0h180m42 0h180" stroke="#f4b860" stroke-width="3"/>
+  <text x="48" y="435" fill="#71d2ca" font-family="monospace" font-size="18">route</text><text x="294" y="435" fill="#eef3ed" font-family="monospace" font-size="18">receive_webhook</text><text x="746" y="435" fill="#a8b5b3" font-family="monospace" font-size="18">store</text>
+</svg>

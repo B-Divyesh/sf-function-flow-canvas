@@ -1,0 +1,58 @@
+[
+  {
+    "id": "demo-one-click",
+    "claim": "Try it with sample data opens a populated webhook canvas.",
+    "where": "Landing first screen, README",
+    "test": "npm test -- --grep @claim:demo-one-click",
+    "sandbox": "Fresh browser context; landing action; bundled webhook sample."
+  },
+  {
+    "id": "demo-isolated",
+    "claim": "Demo changes are stored separately and reset does not change real site data.",
+    "where": "Demo banner, Privacy policy, demo documentation",
+    "test": "npm test -- --grep @claim:demo-isolated",
+    "sandbox": "Fresh browser context with a sentinel real-data key; demo filter and direction changes; reset and leave."
+  },
+  {
+    "id": "demo-private",
+    "claim": "The sample has no account sign-in, cookies, advertising, behavioral tracking, or third-party requests.",
+    "where": "Landing facts, Privacy policy, README",
+    "test": "npm test -- --grep @claim:demo-private",
+    "sandbox": "Fresh browser context; record every request through sample interaction."
+  },
+  {
+    "id": "offline-demo",
+    "claim": "The visited sample can reopen offline.",
+    "where": "Privacy policy",
+    "test": "npm test -- --grep @claim:offline-demo",
+    "sandbox": "Fresh browser context; visit demo, wait for its service worker, set offline, reload."
+  },
+  {
+    "id": "cli-demo",
+    "claim": "ffc --demo writes a self-contained sample canvas in a temporary folder.",
+    "where": "Landing terminal, README, demo documentation",
+    "test": "npm test -- --grep @claim:cli-demo",
+    "sandbox": "Fresh CLI process with only the bundled sample."
+  },
+  {
+    "id": "local-canvas",
+    "claim": "A local language-server result becomes one self-contained HTML canvas.",
+    "where": "Landing, Privacy policy, README",
+    "test": "npm test -- --grep @claim:local-canvas",
+    "sandbox": "Temporary source file and local fixture language server; open the emitted canvas."
+  },
+  {
+    "id": "canvas-keyboard",
+    "claim": "Generated canvases support keyboard search and source inspection.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:canvas-keyboard",
+    "sandbox": "Generated fixture canvas; keyboard-only search and source-context interaction."
+  },
+  {
+    "id": "read-only",
+    "claim": "The CLI reads source files without changing them.",
+    "where": "Landing privacy section, Privacy policy, Terms, README",
+    "test": "npm test -- --grep @claim:read-only",
+    "sandbox": "Temporary source file and local fixture language server; compare source after analysis."
+  }
+]

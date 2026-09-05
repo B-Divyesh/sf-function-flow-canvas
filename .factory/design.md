@@ -73,6 +73,14 @@ remains through contrast, borders, and scale.
   generated asset owned for this product; no third-party source imagery.
 - The route mark and UI glyphs are original inline SVG/CSS geometry authored in
   the repository. They contain no borrowed icon assets.
+- `site/public/social-card.webp`: a 1200×630 crop and resize of the product’s
+  original relay-station image, made locally with ImageMagick for social-card
+  metadata. It adds no third-party imagery or text.
+- `site/public/apple-touch-icon.png`: a locally rasterized version of the
+  repository’s original route-mark geometry, made with ImageMagick.
+- `site/public/ffc-demo-terminal.svg`: an original, hand-authored SVG terminal
+  recording of the real `ffc --demo` output. It uses the product palette and
+  includes equivalent descriptive alt text in the landing page.
 
 The generated scene explains the tool’s central promise—a bounded, illuminated
 route through otherwise unbounded terrain—so it is narrative, not decoration.

@@ -1,6 +1,6 @@
 {
   "globalHeaders": {
-    "Content-Security-Policy": "default-src 'self'; base-uri 'self'; connect-src 'self' https://api.sociobot.in; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
+    "Content-Security-Policy": "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
     "Cross-Origin-Opener-Policy": "same-origin",
     "Cross-Origin-Resource-Policy": "same-origin",
     "Permissions-Policy": "accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()",
@@ -10,10 +10,15 @@
     "X-Frame-Options": "DENY"
   },
   "routes": [
+    { "route": "/demo", "rewrite": "/index.html" },
+    { "route": "/demo/", "rewrite": "/index.html" },
     { "route": "/assets/*", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "route": "/fonts/*", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "route": "/relay-station.webp", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "route": "/relay-station-720.webp", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
+    { "route": "/social-card.webp", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
+    { "route": "/apple-touch-icon.png", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
+    { "route": "/ffc-demo-terminal.svg", "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "route": "/sw.js", "headers": { "Cache-Control": "no-cache" } }
   ],
   "responseOverrides": {
