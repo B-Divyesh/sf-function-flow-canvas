@@ -5,7 +5,7 @@
 - Live URL: <https://function-flow-canvas.sociobot.in/>
 - Deployed implementation: `3bc791b6eba6ad0424e0d765fdae6911e0ccba14`
 - Core repair implementation: `6d024223479cf7894ab1f5b2b6f17df599666371`
-- Documentation/handoff commit: recorded after this handoff is committed.
+- Documentation/handoff record: `3c0a5ff8845c3e688f41953d87a5f2ee9dacb131`
 - Static deployment: succeeded on 2026-09-05 UTC. The host reused the existing
   `sf-function-flow-canvas` static application; no storage, replicas, or
   infrastructure settings changed.
